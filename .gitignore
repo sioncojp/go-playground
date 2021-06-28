@@ -1,5 +1,5 @@
 .idea/
-scripts/*/bin/*
+*/bin/*
 
 # keep
 !.gitkeep
