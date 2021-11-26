@@ -24,16 +24,6 @@ var (
 
 // handleRequest...メイン処理
 func handleRequest(event events.CloudWatchEvent) error {
-	// SlackTokenのdecrypt
-	var ssmClient SsmClient
-	if err := ssmClient.NewClient(); err != nil {
-		return err
-	}
-	slackToken, err := ssmClient.Decrypt(SsmSlackTokenName)
-	if err != nil {
-		return err
-	}
-
 	// Cloudwatchのeventを拾って、exit 0 以外をslackに通知させる
 	c, err := ToCloudWatchEventDetailsStruct(event)
 	if err != nil {
@@ -49,12 +39,22 @@ func handleRequest(event events.CloudWatchEvent) error {
 		}
 	}
 
-	// exit 0以外があるなら通知
-	if len(containerStatus) != 0 {
-		return SlackNotify(slackToken, c.FormatToSlackMessage(containerStatus))
+	// exit 0しかないなら終わり
+	if len(containerStatus) == 0 {
+		return nil
 	}
 
-	return nil
+	// SlackTokenのdecrypt
+	var ssmClient SsmClient
+	if err := ssmClient.NewClient(); err != nil {
+		return err
+	}
+	slackToken, err := ssmClient.Decrypt(SsmSlackTokenName)
+	if err != nil {
+		return err
+	}
+
+	return SlackNotify(slackToken, c.FormatToSlackMessage(containerStatus))
 }
 
 func main() {
