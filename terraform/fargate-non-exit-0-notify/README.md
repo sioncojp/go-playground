@@ -28,6 +28,8 @@ data "aws_kms_alias" "xxx" {
 ```
 
 ## architecture
+![](docs/fargate-non-exit-0-notify_architecture.png)
+
 1. cloudwatch eventsでtaskのstatusをwatch
 2. status変動でlambdaが発火。
 3. Goでジャッジし、slackに通知
