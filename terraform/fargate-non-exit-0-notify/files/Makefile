@@ -26,3 +26,5 @@ go/install:
 		tar zxvf $(file) -C $(bindir) && rm -f $(file); \
 	fi
 
+go/get: go/install ## get -u
+	$(go) get -u
