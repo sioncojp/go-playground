@@ -1,7 +1,7 @@
 # fargate-non-exit-0-notify
 ![](docs/fargate-non-exit-0-notify.png)
 
-- exit 0以外をslackに通知させる
+- exit 0, 143以外をslackに通知させる
 
 ## Required
 - 事前にKMS + ParameterStoreでslackのtoken（xoxb....）を保存しておくこと

@@ -11,6 +11,11 @@ const (
 	SsmSlackTokenName = "/ssm/token_name"
 	ColorRED          = "#F08080"
 	SlackMsgTitle     = "Fargate: error to running container"
+
+	// docker stopはSIGTERMが返ってくるが、
+	// tiniやdumb-initで0にマッピングしてる可能性もあるので。
+	ExitCodeNormal    = 0
+	ExitCodeSIGTERM   = 143
 )
 
 var (
@@ -34,8 +39,10 @@ func handleRequest(event events.CloudWatchEvent) error {
 	// exit 0以外のコンテナ全て取得
 	containerStatus := make(map[string]int)
 	for _, v := range c.Containers {
-		if v.ExitCode != 0 {
-			containerStatus[v.Name] = v.ExitCode
+		if v.ExitCode != ExitCodeNormal {
+			if v.ExitCode != ExitCodeSIGTERM {
+				containerStatus[v.Name] = v.ExitCode
+			}
 		}
 	}
 
